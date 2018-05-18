@@ -1,0 +1,12 @@
+body {
+  padding-top: 40px;
+  font-family: sans-serif;
+}
+
+.sidebar-height {
+  height: calc(100vh - 40px);
+}
+
+main {
+  padding-top: 20px;
+}
