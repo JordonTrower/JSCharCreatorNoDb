@@ -15,6 +15,7 @@ export default class CharacterController {
 				id: character.id,
 				name: character.character.name,
 				race: races[0][character.character.race_id].name,
+				level: character.character.level,
 				class: classes[character.character.class_id].name,
 				stats: character.character.stats
 			}
@@ -26,13 +27,17 @@ export default class CharacterController {
 		if (this.request.body !== {}) {
 			const characters = this.request.app.get('characters');
 			const id = this.request.app.get('charId');
+			console.log(this.request.body)
 			characters.push({
 				id,
 				character: this.request.body
 			});
 			this.request.app.set('characters', characters);
 			this.request.app.set('charId', id + 1);
-			return this.response.status(201).send('Success!');
+			return this.response.status(201).send({
+				text: 'Success!',
+				charId: id
+			});
 		}
 		return this.response.status(400).send('No data!');
 	}
@@ -59,7 +64,7 @@ export default class CharacterController {
 
 	getCharacter() {
 		const characters = this.request.app.get('characters');
-		const characterIndex = characters.findIndex(character => character.id === Number(this.request.query.id))
+		const characterIndex = characters.findIndex(character => character.id === Number(this.request.params.id))
 
 		this.response.send(characters[characterIndex])
 	}

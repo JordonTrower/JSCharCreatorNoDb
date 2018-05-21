@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Button = props => (
-	<div className={`row d-flex ${props.className}`}>
+	<div className={`row d-flex  ${props.className}`}>
 		<button
 			className={`btn ${
 				props.buttonColor !== '' ? props.buttonColor : 'btn-primary'

@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { withRouter } from 'react-router-dom';
 import $ from 'jquery';
 import StatList from './StatList';
 import Button from '../Common/Button';
 import InputBar from '../Common/InputBar';
 import SelectBar from '../Common/SelectBar';
+import CheckList from '../Common/CheckList';
 
 const defaultStats = {
 	Strength: 10,
@@ -46,6 +48,10 @@ class CharacterCreator extends Component {
 			racialBonus: [],
 			selectedRace: '',
 			classes: [],
+			weapons: [],
+			selectedWeapons: [],
+			armors: [],
+			selectedArmor: [],
 			selectedClass: '',
 			level: '',
 			stats: defaultStats
@@ -76,6 +82,26 @@ class CharacterCreator extends Component {
 		}).then(res => {
 			this.setState({ classes: res.data });
 		});
+
+		axios({
+			method: 'get',
+			url: '/character/get-weapons',
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		}).then(res => {
+			this.setState({ weapons: res.data });
+		});
+
+		axios({
+			method: 'get',
+			url: '/character/get-armor',
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		}).then(res => {
+			this.setState({ armors: res.data });
+		});
 	}
 
 	handleSubmit(event) {
@@ -87,7 +113,7 @@ class CharacterCreator extends Component {
 			Object.entries(currentStats).forEach(stat => {
 				const statName = stat[0][0].toUpperCase() + stat[0].substr(1);
 
-				currentStats[statName] = Number(currentStats[statName])
+				currentStats[statName] = Number(currentStats[statName]);
 				currentStats[statName] += Number(
 					racialMod(stat, race, racialBonus)
 				);
@@ -98,7 +124,9 @@ class CharacterCreator extends Component {
 				race_id: this.state.selectedRace,
 				class_id: this.state.selectedClass,
 				stats: currentStats,
-				level: this.state.level
+				level: this.state.level,
+				weapons: this.state.selectedWeapons,
+				armor: this.state.selectedArmor
 			};
 
 			axios({
@@ -106,7 +134,9 @@ class CharacterCreator extends Component {
 				url: '/character/create',
 				data
 			}).then(response => {
-				console.log(response);
+				this.props.history.push(
+					`/character/view/${response.data.charId}`
+				);
 			});
 		} else {
 			$('.alert-danger').show();
@@ -148,7 +178,7 @@ class CharacterCreator extends Component {
 
 	render() {
 		return (
-			<div className="col-md-12">
+			<div className="col-md-12 row">
 				<div className="col-md-6">
 					<div
 						className="alert alert-danger"
@@ -229,7 +259,7 @@ class CharacterCreator extends Component {
 
 					<Button
 						manageHandler={this.randomizeStats}
-						className="justify-content-end mr-3"
+						className="justify-content-end mr-3 flex-column"
 						text="Randomize"
 					/>
 					<StatList
@@ -244,12 +274,71 @@ class CharacterCreator extends Component {
 				</div>
 
 				<br />
+				<div className="col-md-6 row">
+					<h2 className="row col-md-12">Weapons</h2>
+					<CheckList
+						data={this.state.weapons}
+						selected={this.state.selectedWeapons}
+						manageHandler={e => {
+							const weapons = Object.assign(
+								[],
+								this.state.selectedWeapons
+							);
 
-				<Button
-					manageHandler={this.handleSubmit}
-					className="justify-content-end"
-					text="Submit"
-				/>
+							const weaponId = Number(
+								e.target.id.replace('armor-', '')
+							);
+
+							if (weapons.includes(weaponId)) {
+								const itemIndex = weapons.findIndex(
+									item => item.id === weaponId
+								);
+								weapons.splice(itemIndex, 1);
+							} else {
+								weapons.push(weaponId);
+							}
+
+							this.setState({
+								selectedWeapons: weapons
+							});
+						}}
+					/>
+
+					<h2 className="row col-md-12">Armor</h2>
+					<CheckList
+						data={this.state.armors}
+						selected={this.state.selectedArmor}
+						manageHandler={e => {
+							const armors = Object.assign(
+								[],
+								this.state.selectedArmor
+							);
+
+							const armorId = Number(
+								e.target.id.replace('armor-', '')
+							);
+
+							if (armors.includes(armorId)) {
+								const itemIndex = armors.findIndex(
+									item => item.id === armorId
+								);
+								armors.splice(itemIndex, 1);
+							} else {
+								armors.push(armorId);
+							}
+
+							this.setState({
+								selectedArmor: armors
+							});
+						}}
+					/>
+
+					<Button
+						manageHandler={this.handleSubmit}
+						className="align-self-end ml-auto"
+						text="Submit"
+					/>
+				</div>
 			</div>
 		);
 	}

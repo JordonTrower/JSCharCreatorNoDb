@@ -7,7 +7,7 @@ const Index = () => (
 			<AjaxTable
 				url="/character/recieve"
 				name="Characters"
-				headers={['ID', 'Name', 'Race Id', 'Stats', '']}
+				headers={['ID', 'Name', 'Race ', 'Level', 'Class', 'Stats']}
 			/>
 		</div>
 		<div className="col-md-12">

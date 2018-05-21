@@ -17,7 +17,7 @@ router.get('/get-weapons', (req, res) => new CharacterController(req, res).getWe
 
 router.get('/get-armor', (req, res) => new CharacterController(req, res).getArmor())
 
-router.get('/get-character', (req, res) => new CharacterController(req, res).getCharacter())
+router.get('/get-character/:id', (req, res) => new CharacterController(req, res).getCharacter())
 
 router.put('/update', (req, res) => new CharacterController(req, res).updateCharacter())
 
