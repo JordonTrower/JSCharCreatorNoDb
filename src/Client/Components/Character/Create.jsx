@@ -41,7 +41,7 @@ function racialMod(stat, race, bonus) {
 class CharacterCreator extends Component {
 	constructor() {
 		super();
-
+		const defStat = Object.assign({}, defaultStats);
 		this.state = {
 			name: '',
 			races: [],
@@ -54,7 +54,7 @@ class CharacterCreator extends Component {
 			selectedArmor: [],
 			selectedClass: '',
 			level: '',
-			stats: defaultStats
+			stats: defStat
 		};
 
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -134,6 +134,9 @@ class CharacterCreator extends Component {
 				url: '/character/create',
 				data
 			}).then(response => {
+				this.setState({
+					stats: defaultStats
+				});
 				this.props.history.push(
 					`/character/view/${response.data.charId}`
 				);
@@ -348,4 +351,4 @@ class CharacterCreator extends Component {
 	}
 }
 
-export default CharacterCreator;
+export default withRouter(CharacterCreator);
