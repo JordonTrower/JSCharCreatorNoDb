@@ -109,7 +109,7 @@ class CharacterCreator extends Component {
 		const racialBonus = this.state.racialBonus[this.state.selectedRace];
 		const race = this.state.races[this.state.selectedRace];
 
-		if (race && racialBonus && currentStats) {
+		if (race && racialBonus && currentStats && this.state.level !== 0) {
 			Object.entries(currentStats).forEach(stat => {
 				const statName = stat[0][0].toUpperCase() + stat[0].substr(1);
 
@@ -289,13 +289,15 @@ class CharacterCreator extends Component {
 								e.target.id.replace('armor-', '')
 							);
 
-							if (weapons.includes(weaponId)) {
-								const itemIndex = weapons.findIndex(
-									item => item.id === weaponId
-								);
-								weapons.splice(itemIndex, 1);
-							} else {
-								weapons.push(weaponId);
+							if (weaponId !== -1) {
+								if (weapons.includes(weaponId)) {
+									const itemIndex = weapons.findIndex(
+										item => item.id === weaponId
+									);
+									weapons.splice(itemIndex, 1);
+								} else {
+									weapons.push(weaponId);
+								}
 							}
 
 							this.setState({
@@ -318,13 +320,15 @@ class CharacterCreator extends Component {
 								e.target.id.replace('armor-', '')
 							);
 
-							if (armors.includes(armorId)) {
-								const itemIndex = armors.findIndex(
-									item => item.id === armorId
-								);
-								armors.splice(itemIndex, 1);
-							} else {
-								armors.push(armorId);
+							if (armorId !== -1) {
+								if (armors.includes(armorId)) {
+									const itemIndex = armors.findIndex(
+										item => item.id === armorId
+									);
+									armors.splice(itemIndex, 1);
+								} else {
+									armors.push(armorId);
+								}
 							}
 
 							this.setState({

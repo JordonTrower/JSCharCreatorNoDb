@@ -310,14 +310,15 @@ class CharacterView extends Component {
 							const weaponId = Number(
 								e.target.id.replace('armor-', '')
 							);
-
-							if (weapons.includes(weaponId)) {
-								const itemIndex = weapons.findIndex(
-									item => item.id === weaponId
-								);
-								weapons.splice(itemIndex, 1);
-							} else {
-								weapons.push(weaponId);
+							if (weaponId !== 1) {
+								if (weapons.includes(weaponId)) {
+									const itemIndex = weapons.findIndex(
+										item => item.id === weaponId
+									);
+									weapons.splice(itemIndex, 1);
+								} else {
+									weapons.push(weaponId);
+								}
 							}
 
 							this.setState({
@@ -341,13 +342,15 @@ class CharacterView extends Component {
 								e.target.id.replace('armor-', '')
 							);
 
-							if (armors.includes(armorId)) {
-								const itemIndex = armors.findIndex(
-									item => item.id === armorId
-								);
-								armors.splice(itemIndex, 1);
-							} else {
-								armors.push(armorId);
+							if (armorId !== -1) {
+								if (armors.includes(armorId)) {
+									const itemIndex = armors.findIndex(
+										item => item.id === armorId
+									);
+									armors.splice(itemIndex, 1);
+								} else {
+									armors.push(armorId);
+								}
 							}
 
 							this.setState({
