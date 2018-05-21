@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import CharacterCreator from './Create';
 import CharacterIndex from './Index';
+import CharacterView from './View';
 import Sidebar from '../Common/Sidebar';
 
 const CharacterRoutes = () => (
@@ -29,6 +30,10 @@ const CharacterRoutes = () => (
 					<Route
 						path="/character/create"
 						component={CharacterCreator}
+					/>
+					<Route
+						path="/character/view/:id"
+						component={CharacterView}
 					/>
 				</Switch>
 			</main>

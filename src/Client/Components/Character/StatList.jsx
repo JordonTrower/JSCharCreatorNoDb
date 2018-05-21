@@ -34,6 +34,7 @@ class StatList extends React.Component {
 				key={stat[0]}
 				type="number"
 				idText={stat[0]}
+				editing={this.props.editing}
 			/>
 		));
 	}

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { withRouter } from 'react-router-dom';
 import $ from 'jquery';
 import StatList from './StatList';
 import Button from '../Common/Button';
@@ -36,7 +37,7 @@ function racialMod(stat, race, bonus) {
 	return Number(string);
 }
 
-class CharacterCreator extends Component {
+class CharacterView extends Component {
 	constructor() {
 		super();
 
@@ -48,12 +49,12 @@ class CharacterCreator extends Component {
 			classes: [],
 			selectedClass: '',
 			level: '',
-			stats: defaultStats
+			stats: defaultStats,
+			editing: false
 		};
 
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleStatChange = this.handleStatChange.bind(this);
-		this.randomizeStats = this.randomizeStats.bind(this);
 	}
 
 	componentDidMount() {
@@ -76,6 +77,22 @@ class CharacterCreator extends Component {
 		}).then(res => {
 			this.setState({ classes: res.data });
 		});
+
+		axios({
+			method: 'get',
+			url: `/character/get-character/?id=${this.props.match.params.id}`,
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		}).then(res => {
+			console.log(res.data);
+			this.setState({
+				name: res.data.character.name,
+				selectedClass: res.data.character.class_id,
+				selectedRace: res.data.character.race_id,
+				stats: res.data.character.stats
+			});
+		});
 	}
 
 	handleSubmit(event) {
@@ -86,8 +103,7 @@ class CharacterCreator extends Component {
 		if (race && racialBonus && currentStats) {
 			Object.entries(currentStats).forEach(stat => {
 				const statName = stat[0][0].toUpperCase() + stat[0].substr(1);
-
-				currentStats[statName] = Number(currentStats[statName])
+				currentStats[statName] = Number(currentStats[statName]);
 				currentStats[statName] += Number(
 					racialMod(stat, race, racialBonus)
 				);
@@ -97,16 +113,18 @@ class CharacterCreator extends Component {
 				name: this.state.name,
 				race_id: this.state.selectedRace,
 				class_id: this.state.selectedClass,
-				stats: currentStats,
-				level: this.state.level
+				stats: currentStats
 			};
 
 			axios({
-				method: 'post',
-				url: '/character/create',
+				method: 'put',
+				url: `/character/update?id=${this.props.match.params.id}`,
 				data
 			}).then(response => {
 				console.log(response);
+				this.setState({
+					editing: !this.state.submit
+				});
 			});
 		} else {
 			$('.alert-danger').show();
@@ -121,31 +139,6 @@ class CharacterCreator extends Component {
 		this.setState({ stats: currentStats });
 	}
 
-	randomizeStats() {
-		const currentStats = this.state.stats;
-
-		Object.entries(currentStats).forEach(stat => {
-			const randNumArray = Array.from(
-				{ length: 4 },
-				() => Math.floor(Math.random() * 6) + 1
-			);
-
-			const minNum = Math.min(...randNumArray);
-
-			let foundLowest = false;
-
-			currentStats[stat[0]] = randNumArray.reduce((total, num) => {
-				if (num > minNum || foundLowest) {
-					return total + num;
-				}
-				foundLowest = true;
-				return total;
-			}, 0);
-		});
-
-		this.setState({ stats: currentStats });
-	}
-
 	render() {
 		return (
 			<div className="col-md-12">
@@ -157,7 +150,35 @@ class CharacterCreator extends Component {
 					>
 						Make Sure To Fill Out Everything!
 					</div>
-
+					<div
+						className="row col-md-12 justify-content-end btn-group"
+						role="group"
+					>
+						<Button
+							manageHandler={() => {
+								this.setState({ editing: !this.state.editing });
+							}}
+							className="justify-content-end btn"
+							text="Edit"
+						/>
+						<Button
+							manageHandler={() => {
+								axios
+									.delete(
+										`/character/delete/?id=${
+											this.props.match.params.id
+										}`
+									)
+									.then(res => {
+										console.log(res);
+										this.props.history.push('/character/');
+									});
+							}}
+							className="justify-content-end btn"
+							buttonColor="btn-danger"
+							text="Delete"
+						/>
+					</div>
 					<InputBar
 						placeHolder="Character Name"
 						value={this.state.name}
@@ -165,6 +186,7 @@ class CharacterCreator extends Component {
 							this.setState({ name: e.target.value });
 						}}
 						title="Name"
+						editing={this.state.editing}
 					/>
 
 					<SelectBar
@@ -176,6 +198,7 @@ class CharacterCreator extends Component {
 								selectedRace: e.target.value
 							});
 						}}
+						editing={this.state.editing}
 						value={this.state.selectedRace}
 					/>
 
@@ -188,6 +211,7 @@ class CharacterCreator extends Component {
 								selectedClass: e.target.value
 							});
 						}}
+						editing={this.state.editing}
 						value={this.state.selectedClass}
 					/>
 
@@ -218,20 +242,16 @@ class CharacterCreator extends Component {
 						name="level"
 						manageChange={e => {
 							this.setState({
-								level: Number(e.target.value)
+								levels: Number(e.target.value)
 							});
 						}}
+						editing={this.state.editing}
 						value={this.state.level}
 					/>
 					<br />
 
 					<h2 className="row col-md-12">Stats</h2>
 
-					<Button
-						manageHandler={this.randomizeStats}
-						className="justify-content-end mr-3"
-						text="Randomize"
-					/>
 					<StatList
 						stats={this.state.stats}
 						manageHandler={this.handleStatChange}
@@ -240,19 +260,20 @@ class CharacterCreator extends Component {
 						}
 						findMod={racialMod}
 						race={this.state.races[this.state.selectedRace]}
+						editing={this.state.editing}
 					/>
 				</div>
-
 				<br />
 
 				<Button
 					manageHandler={this.handleSubmit}
 					className="justify-content-end"
 					text="Submit"
+					editing={this.state.editing}
 				/>
 			</div>
 		);
 	}
 }
 
-export default CharacterCreator;
+export default withRouter(CharacterView);

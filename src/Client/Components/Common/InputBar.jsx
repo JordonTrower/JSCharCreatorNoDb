@@ -2,15 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const InputBar = props => (
-	<div className="input-group col-md-6 row">
+	<div className="input-group row">
 		<span className=" col-md-3 input-group-text" id={`${props.name}-label`}>
 			{props.title}
 		</span>
 		<input
 			type={props.type}
 			placeholder={props.placeHolder}
-			className="form-control"
+			className="form-control "
 			name={props.name}
+			disabled={!props.editing}
 			onChange={props.manageChange}
 			value={props.value}
 			id={typeof props.idText !== 'undefined' ? props.idText : ''}
@@ -34,7 +35,8 @@ InputBar.propTypes = {
 	idText: PropTypes.string,
 	placeHolder: PropTypes.string,
 	manageChange: PropTypes.func.isRequired,
-	append: PropTypes.string
+	append: PropTypes.string,
+	editing: PropTypes.bool
 };
 
 InputBar.defaultProps = {
@@ -43,6 +45,7 @@ InputBar.defaultProps = {
 	value: '',
 	placeHolder: '',
 	idText: '',
-	append: undefined
+	append: undefined,
+	editing: true
 };
 export default InputBar;

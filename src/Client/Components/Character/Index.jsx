@@ -6,7 +6,8 @@ const CharacterIndex = () => (
 		<AjaxTable
 			url="/character/recieve"
 			name="Characters"
-			headers={['ID', 'Name', 'Created At', 'Updated At']}
+			buttonUrl="/character/view"
+			headers={['ID', 'Name', 'Race', 'Class', 'Stats', '']}
 		/>
 	</div>
 );

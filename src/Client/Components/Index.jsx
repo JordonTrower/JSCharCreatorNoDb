@@ -3,23 +3,40 @@ import AjaxTable from './Common/AjaxTable';
 
 const Index = () => (
 	<div className="col-md-12 d-flex row">
-		<div className="col-md-6">
+		<div className="col-md-12">
 			<AjaxTable
 				url="/character/recieve"
-				name="Users"
-				headers={['ID', 'Email', 'First Name', 'Last Name']}
+				name="Characters"
+				headers={['ID', 'Name', 'Race Id', 'Stats', '']}
 			/>
 		</div>
-		<div className="col-md-6">
+		<div className="col-md-12">
 			<AjaxTable
-				url="/Items"
-				name="Items"
+				url="/character/get-weapons"
+				name="Weapons"
 				headers={[
 					'ID',
-					'Item Name',
-					'Price',
-					'Created At',
-					'Updated At'
+					'Name',
+					'Cost',
+					'Weight',
+					'Range',
+					'Damange',
+					'Prof'
+				]}
+			/>
+		</div>
+		<div className="col-md-12">
+			<AjaxTable
+				url="/character/get-armor"
+				name="Armors"
+				headers={[
+					'ID',
+					'Name',
+					'Cost',
+					'Weight',
+					'Strength Requirement',
+					'Armor Class',
+					'Stealth Disadvantage'
 				]}
 			/>
 		</div>
